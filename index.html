@@ -1,368 +1,745 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Data Segono Official - Edit & Mutasi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body { background: #f8fafc; color: #1e293b; font-family: 'Inter', sans-serif; }
-        .stat-card { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-left: 5px solid #3b82f6; }
-        .tab-button.active { border-bottom: 4px solid #1d4ed8; color: #1d4ed8; font-weight: 800; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 1000; overflow-y: auto; padding: 15px; }
-        .modal.active { display: flex; align-items: flex-start; justify-content: center; }
-        .kk-box { background: white; border: 1px solid #e2e8f0; border-radius: 15px; margin-bottom: 1.2rem; overflow: hidden; }
-        input, select { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 10px; width: 100%; font-size: 0.9rem; }
-        .label-text { display: block; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
-        #login-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .list-item-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.85rem; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Presensi SMP NU 08 Boja</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #eef3f7;
+      color: #1f2937;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #006b3c, #00a15d);
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 0 0 24px 24px;
+    }
+
+    .header img {
+      width: 75px;
+      height: 75px;
+      object-fit: contain;
+      background: white;
+      padding: 7px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+    }
+
+    .app {
+      max-width: 1000px;
+      margin: auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      border-radius: 18px;
+      margin-bottom: 15px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    button {
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-green { background: #008f50; }
+    .btn-blue { background: #2563eb; }
+    .btn-red { background: #dc2626; }
+    .btn-gray { background: #4b5563; }
+
+    .hidden { display: none; }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .nav button {
+      background: #006b3c;
+      font-size: 13px;
+      padding: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 24px;
+      color: #006b3c;
+    }
+
+    .info-box {
+      background: #ecfdf5;
+      border-left: 5px solid #008f50;
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    video, canvas, img.preview {
+      width: 100%;
+      border-radius: 14px;
+      margin-top: 10px;
+      background: #111;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: white;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 7px;
+      text-align: left;
+    }
+
+    th {
+      background: #006b3c;
+      color: white;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      display: inline-block;
+    }
+
+    .ok { background: #008f50; }
+    .late { background: #dc2626; }
+    .info { background: #2563eb; }
+
+    .rekap-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    @media(max-width: 600px) {
+      .grid, .nav, .rekap-tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+      .page.hidden { display: none !important; }
+    }
+  </style>
 </head>
+
 <body>
 
-    <div id="login-screen">
-        <div class="bg-white p-10 rounded-[2rem] shadow-2xl w-full max-w-sm mx-4 text-center">
-            <div class="text-5xl mb-4"></div>
-            <h2 class="text-2xl font-black mb-6 uppercase">Admin Login</h2>
-            <input type="password" id="input-pass" placeholder="••••" class="mb-4 text-center text-3xl border-2 p-4 rounded-2xl w-full outline-none">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">MASUK SISTEM</button>
-        </div>
+<div class="header">
+  <img id="logo" src="" onerror="this.style.display='none'">
+  <h2 id="schoolName">Presensi SMP NU 08 Boja</h2>
+  <p id="schoolAddress">Boja, Kendal</p>
+</div>
+
+<div class="app">
+
+  <div id="loginPage" class="card">
+    <h2>Login Pegawai</h2>
+    <input id="loginId" placeholder="ID Pegawai">
+    <input id="loginPin" type="password" placeholder="PIN">
+    <button class="btn-green" onclick="login()">Login</button>
+  </div>
+
+  <div id="mainPage" class="hidden">
+
+    <div class="card no-print">
+      <h3 id="userInfo"></h3>
+      <button class="btn-red" onclick="logout()">Logout</button>
     </div>
 
-    <div id="app-content" class="hidden">
-        <header class="bg-blue-800 text-white px-6 py-8 shadow-xl text-center">
-            <h1 class="text-2xl font-black uppercase tracking-tighter" id="head-dusun">Dusun Segono</h1>
-            <p class="text-xs opacity-80" id="head-alamat">Memuat data...</p>
-        </header>
-
-        <nav class="bg-white shadow-md flex justify-around sticky top-0 z-50">
-            <button class="tab-button active py-5 px-4 text-xs font-black uppercase" data-tab="dashboard"> Beranda</button>
-            <button class="tab-button py-5 px-4 text-xs font-black uppercase" data-tab="penduduk"> Data Warga</button>
-            <button class="tab-button py-5 px-4 text-xs font-black uppercase" data-tab="pengaturan"> Panel</button>
-        </nav>
-
-        <main class="container mx-auto p-4 pb-24">
-            <div id="tab-dashboard" class="tab-content">
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="stat-card p-5 border-l-blue-600"><p class="label-text">Warga Aktif</p><h3 id="st-total" class="text-3xl font-black">0</h3></div>
-                    <div class="stat-card p-5 border-l-orange-500"><p class="label-text">Total KK</p><h3 id="st-kk" class="text-3xl font-black">0</h3></div>
-                    <div class="stat-card p-5 border-l-emerald-500"><p class="label-text">Laki-Laki</p><h3 id="st-laki" class="text-3xl font-black">0</h3></div>
-                    <div class="stat-card p-5 border-l-rose-500"><p class="label-text">Perempuan</p><h3 id="st-perempuan" class="text-3xl font-black">0</h3></div>
-                </div>
-
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-red-100 mb-6">
-                    <h2 class="text-red-700 font-black text-[10px] uppercase mb-4 tracking-widest flex items-center gap-2">
-                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Laporan Mutasi (Bulan Ini)
-                    </h2>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-blue-50 p-3 rounded-xl"><p class="text-[9px] font-bold text-blue-600 uppercase">Lahir</p><h4 id="mu-lahir" class="text-xl font-black">0</h4></div>
-                        <div class="bg-gray-100 p-3 rounded-xl"><p class="text-[9px] font-bold text-gray-600 uppercase">Meninggal</p><h4 id="mu-mati" class="text-xl font-black">0</h4></div>
-                        <div class="bg-orange-50 p-3 rounded-xl"><p class="text-[9px] font-bold text-orange-600 uppercase">Pindah</p><h4 id="mu-pindah" class="text-xl font-black">0</h4></div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
-                    <h2 class="text-blue-800 font-black text-xs uppercase mb-4 tracking-widest border-b pb-2"> Rincian Pendidikan & Pekerjaan</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div><p class="label-text text-blue-600 mb-3">Tingkat Pendidikan</p><div id="stat-list-pendidikan" class="space-y-1"></div></div>
-                        <div><p class="label-text text-emerald-600 mb-3">Jenis Pekerjaan</p><div id="stat-list-pekerjaan" class="space-y-1"></div></div>
-                    </div>
-                </div>
-
-                <button onclick="openForm()" class="w-full bg-blue-700 text-white py-5 rounded-2xl font-black shadow-xl uppercase text-sm">+ Tambah Warga Baru</button>
-            </div>
-
-            <div id="tab-penduduk" class="tab-content hidden">
-                <div class="bg-white p-4 rounded-xl shadow-sm border mb-4 grid grid-cols-2 gap-3">
-                    <div class="col-span-2"><label class="label-text">Pencarian</label><input type="text" id="cari" placeholder="Nama / NIK..." onkeyup="render()"></div>
-                    <div><label class="label-text">RT</label><input type="text" id="filter-rt" placeholder="RT" onkeyup="render()"></div>
-                    <div><label class="label-text">RW</label><input type="text" id="filter-rw" placeholder="RW" onkeyup="render()"></div>
-                </div>
-                <div id="list-kk"></div>
-            </div>
-
-            <div id="tab-pengaturan" class="tab-content hidden">
-                <div class="bg-white p-6 rounded-2xl border mb-6 shadow-sm">
-                    <h2 class="font-black mb-4 text-blue-900 uppercase text-xs">Identitas Wilayah</h2>
-                    <div class="space-y-3">
-                        <input type="text" id="set-dusun" placeholder="Dusun">
-                        <input type="text" id="set-desa" placeholder="Desa">
-                        <input type="text" id="set-kec" placeholder="Kecamatan">
-                        <input type="text" id="set-kab" placeholder="Kabupaten">
-                        <input type="text" id="set-prov" placeholder="Provinsi">
-                        <input type="text" id="set-pass" placeholder="Password Admin">
-                        <button onclick="saveSettings()" class="w-full bg-blue-800 text-white py-3 rounded-xl font-bold uppercase text-[10px]">Simpan Identitas</button>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border mb-6 shadow-sm">
-                    <h2 class="font-black mb-4 text-green-700 uppercase text-xs">Database Excel</h2>
-                    <input type="file" id="import-excel" accept=".xlsx, .xls" class="mb-3 text-xs">
-                    <button onclick="importData()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mb-2 uppercase text-xs">Import Excel</button>
-                    <button onclick="exportExcel()" class="w-full bg-slate-700 text-white py-3 rounded-xl font-bold mb-2 uppercase text-xs">Export Semua Data</button>
-                    <button onclick="resetDB()" class="w-full bg-red-50 text-red-600 py-3 rounded-xl font-bold uppercase text-xs">Reset Data</button>
-                </div>
-            </div>
-        </main>
-
-        <div id="modal-form" class="modal">
-            <div class="bg-white w-full max-w-5xl rounded-[2.5rem] overflow-hidden my-4 shadow-2xl">
-                <div class="bg-blue-800 p-6 text-white flex justify-between items-center">
-                    <h2 id="modal-title" class="font-black uppercase text-xs tracking-widest">Entri Data Penduduk</h2>
-                    <button onclick="closeForm()" class="text-3xl">&times;</button>
-                </div>
-                <form id="form-data" class="p-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="hidden" name="id" id="form-id">
-                    <div class="md:col-span-3 border-b font-black text-[10px] text-blue-700 uppercase">I. Data Kartu Keluarga</div>
-                    <input type="text" name="noKK" placeholder="No. KK" required>
-                    <input type="text" name="namaKepala" placeholder="Kepala Keluarga" required>
-                    <input type="text" name="alamat" placeholder="Alamat">
-                    <input type="text" name="rt" placeholder="RT" required>
-                    <input type="text" name="rw" placeholder="RW" required>
-                    
-                    <div class="md:col-span-3 border-b font-black text-[10px] text-blue-700 uppercase mt-4">II. Data Pribadi & Status Mutasi</div>
-                    <input type="text" name="nik" placeholder="NIK" required>
-                    <input type="text" name="nama" placeholder="Nama Lengkap" required>
-                    <select name="jk"><option value="L">Laki-Laki</option><option value="P">Perempuan</option></select>
-                    <input type="text" name="tempatLahir" placeholder="Tempat Lahir">
-                    <input type="date" name="tglLahir">
-                    <select name="status">
-                        <option value="HIDUP">STATUS: HIDUP (AKTIF)</option>
-                        <option value="LAHIR">STATUS: LAHIR (AKTIF)</option>
-                        <option value="MENINGGAL">STATUS: MENINGGAL (ARSIP)</option>
-                        <option value="PINDAH">STATUS: PINDAH (ARSIP)</option>
-                    </select>
-                    <input type="text" name="pendidikan" placeholder="Pendidikan">
-                    <input type="text" name="pekerjaan" placeholder="Pekerjaan">
-                    <input type="text" name="hubungan" placeholder="Hubungan">
-                    <input type="text" name="ayah" placeholder="Ayah">
-                    <input type="text" name="ibu" placeholder="Ibu">
-                    <input type="hidden" name="tglUpdate" id="tglUpdate">
-                    <button type="submit" id="btn-submit" class="md:col-span-3 bg-blue-700 text-white py-5 rounded-2xl font-black uppercase shadow-lg">Simpan Data</button>
-                </form>
-            </div>
-        </div>
+    <div class="nav no-print">
+      <button onclick="showPage('dashboard')">Dashboard</button>
+      <button onclick="showPage('presensi')">Presensi</button>
+      <button onclick="showPage('izin')">Izin</button>
+      <button onclick="showPage('rekap')">Rekap</button>
     </div>
 
-    <script>
-        let db = JSON.parse(localStorage.getItem('segono_db')) || [];
-        let config = JSON.parse(localStorage.getItem('segono_cfg')) || { pass: "1234", dusun: "Segono", desa: "Segono", kec: "-", kab: "-", prov: "-" };
+    <div id="dashboard" class="page card">
+      <h2>Dashboard Hari Ini</h2>
 
-        function handleLogin() {
-            if(document.getElementById('input-pass').value === config.pass) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-content').classList.remove('hidden');
-                init();
-            } else { Swal.fire('Error', 'Password Salah!', 'error'); }
+      <div class="grid">
+        <div class="stat"><b id="statHadir">0</b>Hadir</div>
+        <div class="stat"><b id="statTelat">0</b>Terlambat</div>
+        <div class="stat"><b id="statIzin">0</b>Izin/Sakit/Dinas</div>
+        <div class="stat"><b id="statTotal">0</b>Total Pegawai</div>
+      </div>
+    </div>
+
+    <div id="presensi" class="page card hidden">
+      <h2>Presensi Masuk / Pulang</h2>
+      <p id="tanggalJam"></p>
+
+      <div class="info-box" id="gpsInfo">
+        Lokasi belum dicek.
+      </div>
+
+      <button class="btn-blue" onclick="cekLokasi()">Cek Lokasi GPS</button>
+
+      <textarea id="ketPresensi" placeholder="Keterangan opsional"></textarea>
+
+      <div id="selfieArea" class="hidden">
+        <h3>Selfie Presensi</h3>
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" class="hidden"></canvas>
+        <img id="previewSelfie" class="preview hidden">
+        <button class="btn-gray" onclick="ambilSelfie()">Ambil Selfie</button>
+      </div>
+
+      <button class="btn-green" onclick="presensiMasuk()">Presensi Masuk</button>
+      <button class="btn-blue" onclick="presensiPulang()">Presensi Pulang</button>
+    </div>
+
+    <div id="izin" class="page card hidden">
+      <h2>Izin / Sakit / Dinas</h2>
+
+      <select id="jenisIzin">
+        <option value="IZIN">IZIN</option>
+        <option value="SAKIT">SAKIT</option>
+        <option value="DINAS">DINAS</option>
+        <option value="CUTI">CUTI</option>
+      </select>
+
+      <textarea id="ketIzin" placeholder="Keterangan izin"></textarea>
+      <button class="btn-blue" onclick="simpanIzin()">Simpan Izin</button>
+    </div>
+
+    <div id="rekap" class="page card hidden">
+      <h2>Rekap Presensi</h2>
+
+      <div class="no-print">
+        <input id="bulanRekap" type="month">
+
+        <div class="rekap-tabs">
+          <button class="btn-green" onclick="loadRekap()">Detail Harian</button>
+          <button class="btn-blue" onclick="loadRekapBulanan()">Ringkasan Bulanan</button>
+        </div>
+
+        <button class="btn-gray" onclick="window.print()">Print Rekap</button>
+      </div>
+
+      <div id="rekapDetailBox">
+        <h3>Rekap Detail Harian</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Jabatan</th>
+                <th>Unit</th>
+                <th>Masuk</th>
+                <th>Status</th>
+                <th>Pulang</th>
+                <th>Jarak</th>
+                <th>Ket</th>
+              </tr>
+            </thead>
+            <tbody id="rekapPresensi"></tbody>
+          </table>
+        </div>
+
+        <h3>Izin / Sakit / Dinas / Cuti</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Jenis</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody id="rekapIzin"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="rekapBulananBox" class="hidden">
+        <h3>Ringkasan Bulanan Per Pegawai</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Jabatan</th>
+                <th>Unit</th>
+                <th>Hadir</th>
+                <th>Tepat Waktu</th>
+                <th>Terlambat</th>
+                <th>Izin</th>
+                <th>Sakit</th>
+                <th>Dinas</th>
+                <th>Cuti</th>
+              </tr>
+            </thead>
+            <tbody id="rekapBulanan"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzMzuV9eFbrzJZEJIWxNLRjWfkTcFF_KkjeJqvTDUvL-5VUUodOwKPx7YCyOEPn4nVU/exec";
+
+  let currentUser = null;
+
+  let db = {
+    settings: {},
+    pegawai: [],
+    presensi: [],
+    izin: []
+  };
+
+  let lokasiUser = {
+    lat: "",
+    lng: "",
+    jarak: ""
+  };
+
+  let selfieBase64 = "";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("bulanRekap").value =
+      new Date().toISOString().slice(0, 7);
+
+    const saved = localStorage.getItem("presensi_user_smpnu08");
+    if (saved) {
+      currentUser = JSON.parse(saved);
+      masukAplikasi();
+    }
+
+    loadInit();
+    setInterval(updateClock, 1000);
+  });
+
+  async function api(action, data = {}) {
+    const res = await fetch(GAS_URL + "?action=" + action, {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+
+    return await res.json();
+  }
+
+  async function loadInit() {
+    try {
+      const result = await api("init");
+
+      if (!result.success) {
+        alert(result.message);
+        return;
+      }
+
+      db = result;
+
+      document.getElementById("schoolName").innerText =
+        db.settings.school_name || "SMP NU 08 Boja";
+
+      document.getElementById("schoolAddress").innerText =
+        db.settings.school_address || "Boja, Kendal";
+
+      if (db.settings.logo_url) {
+        document.getElementById("logo").src = db.settings.logo_url;
+      }
+
+      if (String(db.settings.wajib_selfie).toUpperCase() === "YA") {
+        document.getElementById("selfieArea").classList.remove("hidden");
+        startCamera();
+      } else {
+        document.getElementById("selfieArea").classList.add("hidden");
+      }
+
+      updateDashboard();
+
+    } catch (err) {
+      alert("Gagal konek ke GAS. Cek URL GAS.");
+      console.error(err);
+    }
+  }
+
+  async function login() {
+    const id_pegawai = document.getElementById("loginId").value.trim();
+    const pin = document.getElementById("loginPin").value.trim();
+
+    if (!id_pegawai || !pin) {
+      alert("ID Pegawai dan PIN wajib diisi");
+      return;
+    }
+
+    const result = await api("login", { id_pegawai, pin });
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    currentUser = result.user;
+    localStorage.setItem("presensi_user_smpnu08", JSON.stringify(currentUser));
+    masukAplikasi();
+  }
+
+  function masukAplikasi() {
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("mainPage").classList.remove("hidden");
+
+    document.getElementById("userInfo").innerText =
+      currentUser.nama + " - " + currentUser.jabatan;
+
+    showPage("dashboard");
+  }
+
+  function logout() {
+    localStorage.removeItem("presensi_user_smpnu08");
+    location.reload();
+  }
+
+  function showPage(id) {
+    document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+
+    if (id === "dashboard") loadInit();
+    if (id === "rekap") loadRekap();
+    if (id === "presensi") cekLokasi();
+  }
+
+  function updateClock() {
+    const el = document.getElementById("tanggalJam");
+    if (el) {
+      el.innerText = new Date().toLocaleString("id-ID");
+    }
+  }
+
+  function cekLokasi() {
+    const info = document.getElementById("gpsInfo");
+    info.innerHTML = "Membaca lokasi GPS...";
+
+    if (!navigator.geolocation) {
+      info.innerHTML = "Browser tidak mendukung GPS.";
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        lokasiUser.lat = pos.coords.latitude;
+        lokasiUser.lng = pos.coords.longitude;
+
+        const schoolLat = parseFloat(db.settings.school_lat || "0");
+        const schoolLng = parseFloat(db.settings.school_lng || "0");
+
+        if (schoolLat && schoolLng) {
+          lokasiUser.jarak = hitungJarakMeter(
+            schoolLat,
+            schoolLng,
+            lokasiUser.lat,
+            lokasiUser.lng
+          );
+
+          info.innerHTML =
+            "GPS terbaca.<br>Jarak dari sekolah: <b>" +
+            Math.round(lokasiUser.jarak) +
+            " meter</b>";
+        } else {
+          info.innerHTML =
+            "GPS terbaca, tetapi titik sekolah belum diisi di SETTINGS.";
         }
+      },
+      () => {
+        info.innerHTML = "GPS gagal terbaca. Aktifkan izin lokasi di browser.";
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000
+      }
+    );
+  }
 
-        function init() {
-            document.getElementById('set-pass').value = config.pass;
-            document.getElementById('set-dusun').value = config.dusun;
-            document.getElementById('set-desa').value = config.desa;
-            document.getElementById('set-kec').value = config.kec;
-            document.getElementById('set-kab').value = config.kab;
-            document.getElementById('set-prov').value = config.prov;
-            refreshUI(); render();
-        }
+  function hitungJarakMeter(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
 
-        function saveSettings() {
-            config = {
-                pass: document.getElementById('set-pass').value,
-                dusun: document.getElementById('set-dusun').value,
-                desa: document.getElementById('set-desa').value,
-                kec: document.getElementById('set-kec').value,
-                kab: document.getElementById('set-kab').value,
-                prov: document.getElementById('set-prov').value
-            };
-            localStorage.setItem('segono_cfg', JSON.stringify(config));
-            refreshUI(); Swal.fire('Berhasil', 'Pengaturan Disimpan', 'success');
-        }
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
 
-        function refreshUI() {
-            document.getElementById('head-dusun').innerText = "Dusun " + config.dusun;
-            document.getElementById('head-alamat').innerText = `Desa ${config.desa}, Kec. ${config.kec}, Kab. ${config.kab}, Prov. ${config.prov}`;
-        }
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 
-        function importData() {
-            const f = document.getElementById('import-excel').files[0];
-            if(!f) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                const now = new Date().toISOString().split('T')[0];
-                db = [...db, ...json.map(x => ({
-                    ...x, 
-                    id: x.id || Date.now() + Math.random(), 
-                    status: (x.status || 'HIDUP').toUpperCase(),
-                    tglUpdate: x.tglUpdate || now
-                }))];
-                localStorage.setItem('segono_db', JSON.stringify(db));
-                render(); Swal.fire('Import Berhasil!', '', 'success');
-            };
-            reader.readAsArrayBuffer(f);
-        }
+  function toRad(value) {
+    return value * Math.PI / 180;
+  }
 
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                btn.classList.add('active');
-                document.getElementById(`tab-${btn.dataset.tab}`).classList.remove('hidden');
-                render();
-            });
-        });
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+        audio: false
+      });
 
-        function openForm() { 
-            document.getElementById('modal-title').innerText = "Entri Data Penduduk";
-            document.getElementById('form-id').value = "";
-            document.getElementById('btn-submit').innerText = "SIMPAN WARGA BARU";
-            document.getElementById('modal-form').classList.add('active'); 
-        }
+      document.getElementById("video").srcObject = stream;
+    } catch (err) {
+      console.log("Kamera gagal:", err);
+    }
+  }
 
-        function closeForm() { 
-            document.getElementById('modal-form').classList.remove('active'); 
-            document.getElementById('form-data').reset(); 
-        }
+  function ambilSelfie() {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const preview = document.getElementById("previewSelfie");
 
-        function editWarga(id) {
-            const data = db.find(x => x.id == id);
-            if(data) {
-                const form = document.getElementById('form-data');
-                for (let key in data) {
-                    if(form.elements[key]) form.elements[key].value = data[key];
-                }
-                document.getElementById('modal-title').innerText = "Edit Data: " + data.nama;
-                document.getElementById('btn-submit').innerText = "SIMPAN PERUBAHAN";
-                document.getElementById('modal-form').classList.add('active');
-            }
-        }
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-        document.getElementById('form-data').onsubmit = function(e) {
-            e.preventDefault();
-            const formData = Object.fromEntries(new FormData(e.target));
-            const now = new Date().toISOString().split('T')[0];
-            
-            if(formData.id) {
-                // Proses Update
-                const idx = db.findIndex(x => x.id == formData.id);
-                db[idx] = {...db[idx], ...formData, tglUpdate: now};
-            } else {
-                // Proses Baru
-                formData.id = Date.now();
-                formData.tglUpdate = now;
-                db.push(formData);
-            }
-            
-            localStorage.setItem('segono_db', JSON.stringify(db));
-            render(); closeForm(); 
-            Swal.fire('Berhasil!', 'Data telah diperbarui.', 'success');
-        };
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
 
-        function render() {
-            const q = document.getElementById('cari').value.toLowerCase();
-            const rt = document.getElementById('filter-rt').value;
-            const rw = document.getElementById('filter-rw').value;
-            const curMonth = new Date().toISOString().split('-').slice(0,2).join('-');
+    selfieBase64 = canvas.toDataURL("image/jpeg", 0.5);
 
-            const aktif = db.filter(x => x.status === 'HIDUP' || x.status === 'LAHIR');
-            document.getElementById('st-total').innerText = aktif.length;
-            document.getElementById('st-laki').innerText = aktif.filter(x => x.jk === 'L').length;
-            document.getElementById('st-perempuan').innerText = aktif.filter(x => x.jk === 'P').length;
+    preview.src = selfieBase64;
+    preview.classList.remove("hidden");
 
-            const mutasiBulanIni = db.filter(x => (x.tglUpdate || "").startsWith(curMonth));
-            document.getElementById('mu-lahir').innerText = mutasiBulanIni.filter(x => x.status === 'LAHIR').length;
-            document.getElementById('mu-mati').innerText = mutasiBulanIni.filter(x => x.status === 'MENINGGAL').length;
-            document.getElementById('mu-pindah').innerText = mutasiBulanIni.filter(x => x.status === 'PINDAH').length;
+    alert("Selfie berhasil diambil.");
+  }
 
-            const eduStat = {}; const jobStat = {};
-            aktif.forEach(x => {
-                let edu = (x.pendidikan || "TIDAK SEKOLAH").toUpperCase();
-                let job = (x.pekerjaan || "TIDAK BEKERJA").toUpperCase();
-                eduStat[edu] = (eduStat[edu] || 0) + 1;
-                jobStat[job] = (jobStat[job] || 0) + 1;
-            });
-            document.getElementById('stat-list-pendidikan').innerHTML = Object.keys(eduStat).map(k => `<div class="list-item-stat"><span>${k}</span><span class="font-black">${eduStat[k]}</span></div>`).join('');
-            document.getElementById('stat-list-pekerjaan').innerHTML = Object.keys(jobStat).map(k => `<div class="list-item-stat"><span>${k}</span><span class="font-black text-emerald-600">${jobStat[k]}</span></div>`).join('');
+  function getDevice() {
+    return navigator.userAgent;
+  }
 
-            const filtered = aktif.filter(x => {
-                const matchQ = (x.nama||"").toLowerCase().includes(q) || (x.nik||"").includes(q);
-                const matchRT = rt ? x.rt == rt : true;
-                const matchRW = rw ? x.rw == rw : true;
-                return matchQ && matchRT && matchRW;
-            });
+  async function presensiMasuk() {
+    if (!currentUser) return;
 
-            const groups = {};
-            filtered.forEach(p => { if(!groups[p.noKK]) groups[p.noKK] = []; groups[p.noKK].push(p); });
-            document.getElementById('st-kk').innerText = Object.keys(groups).length;
+    if (!lokasiUser.lat || !lokasiUser.lng) {
+      alert("Cek lokasi GPS dulu.");
+      cekLokasi();
+      return;
+    }
 
-            const list = document.getElementById('list-kk');
-            list.innerHTML = '';
-            for(let kk in groups) {
-                const h = groups[kk][0];
-                list.innerHTML += `
-                    <div class="kk-box">
-                        <div class="bg-blue-50 p-4 border-b text-[10px] font-black uppercase flex justify-between items-center">
-                            <span> ${h.namaKepala} (RT ${h.rt}/RW ${h.rw})</span>
-                            <button onclick="ubahStatusKK('${kk}')" class="text-blue-500 bg-white px-2 py-1 rounded border border-blue-200 text-[8px]">MUTASI 1 KK</button>
-                        </div>
-                        <div class="p-1">${groups[kk].map(m => `<div class="p-3 border-b text-[10px] flex justify-between items-center">
-                            <span class="flex-1"><b>${m.nama}</b> (${m.hubungan})</span> 
-                            <div class="flex gap-4">
-                                <button onclick="editWarga('${m.id}')" class="text-blue-500 font-bold"> Edit</button>
-                                <button onclick="ubahStatusIndividu('${m.id}')" class="text-gray-400"> Mutasi</button>
-                            </div>
-                        </div>`).join('')}</div>
-                    </div>`;
-            }
-        }
+    const wajibSelfie = String(db.settings.wajib_selfie).toUpperCase() === "YA";
 
-        async function ubahStatusIndividu(id) {
-            const { value: status } = await Swal.fire({
-                title: 'Ubah Status Warga',
-                input: 'select',
-                inputOptions: { 'HIDUP': 'Hidup', 'MENINGGAL': 'Meninggal', 'PINDAH': 'Pindah' },
-                showCancelButton: true
-            });
-            if (status) {
-                const idx = db.findIndex(x => x.id == id);
-                db[idx].status = status;
-                db[idx].tglUpdate = new Date().toISOString().split('T')[0];
-                localStorage.setItem('segono_db', JSON.stringify(db));
-                render();
-                Swal.fire('Terarsip', 'Status berhasil diperbarui', 'success');
-            }
-        }
+    if (wajibSelfie && !selfieBase64) {
+      alert("Selfie wajib diambil dulu.");
+      return;
+    }
 
-        async function ubahStatusKK(noKK) {
-            const { value: status } = await Swal.fire({
-                title: 'Mutasi Satu Keluarga',
-                input: 'select',
-                inputOptions: { 'PINDAH': 'Pindah Domisili', 'MENINGGAL': 'Meninggal (Seluruhnya)' },
-                showCancelButton: true
-            });
-            if (status) {
-                db.forEach((x, idx) => {
-                    if(x.noKK === noKK) {
-                        db[idx].status = status;
-                        db[idx].tglUpdate = new Date().toISOString().split('T')[0];
-                    }
-                });
-                localStorage.setItem('segono_db', JSON.stringify(db));
-                render();
-                Swal.fire('Berhasil', 'Seluruh keluarga telah dimutasi', 'success');
-            }
-        }
+    const data = {
+      ...currentUser,
+      keterangan: document.getElementById("ketPresensi").value,
+      lat: lokasiUser.lat,
+      lng: lokasiUser.lng,
+      selfie: selfieBase64,
+      device: getDevice()
+    };
 
-        function resetDB() { if(confirm('Hapus selamanya?')) { db = []; localStorage.setItem('segono_db', JSON.stringify(db)); render(); } }
-        function exportExcel() {
-            const ws = XLSX.utils.json_to_sheet(db);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Data_Lengkap");
-            XLSX.writeFile(wb, `Database_Segono_Lengkap.xlsx`);
-        }
-    </script>
+    const result = await api("presensiMasuk", data);
+    alert(result.message);
+
+    document.getElementById("ketPresensi").value = "";
+    selfieBase64 = "";
+    await loadInit();
+  }
+
+  async function presensiPulang() {
+    if (!currentUser) return;
+
+    if (!lokasiUser.lat || !lokasiUser.lng) {
+      alert("Cek lokasi GPS dulu.");
+      cekLokasi();
+      return;
+    }
+
+    const data = {
+      ...currentUser,
+      lat: lokasiUser.lat,
+      lng: lokasiUser.lng
+    };
+
+    const result = await api("presensiPulang", data);
+    alert(result.message);
+
+    await loadInit();
+  }
+
+  async function simpanIzin() {
+    const data = {
+      ...currentUser,
+      jenis: document.getElementById("jenisIzin").value,
+      keterangan: document.getElementById("ketIzin").value
+    };
+
+    if (!data.keterangan) {
+      alert("Keterangan izin wajib diisi.");
+      return;
+    }
+
+    const result = await api("simpanIzin", data);
+    alert(result.message);
+
+    document.getElementById("ketIzin").value = "";
+    await loadInit();
+  }
+
+  function updateDashboard() {
+    const today = new Date().toISOString().slice(0, 10);
+
+    const hadir = db.presensi.filter(p => String(p.tanggal) === today);
+    const telat = hadir.filter(p => p.status_masuk === "TERLAMBAT");
+    const izin = db.izin.filter(i => String(i.tanggal) === today);
+    const pegawaiAktif = db.pegawai.filter(p =>
+      String(p.status).toUpperCase() === "AKTIF"
+    );
+
+    document.getElementById("statHadir").innerText = hadir.length;
+    document.getElementById("statTelat").innerText = telat.length;
+    document.getElementById("statIzin").innerText = izin.length;
+    document.getElementById("statTotal").innerText = pegawaiAktif.length;
+  }
+
+  async function loadRekap() {
+    document.getElementById("rekapDetailBox").classList.remove("hidden");
+    document.getElementById("rekapBulananBox").classList.add("hidden");
+
+    const bulan = document.getElementById("bulanRekap").value;
+    const result = await api("getRekap", { bulan });
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    const tbodyPresensi = document.getElementById("rekapPresensi");
+    const tbodyIzin = document.getElementById("rekapIzin");
+
+    tbodyPresensi.innerHTML = "";
+    tbodyIzin.innerHTML = "";
+
+    result.presensi.forEach(p => {
+      const badgeClass = p.status_masuk === "TERLAMBAT" ? "late" : "ok";
+
+      tbodyPresensi.innerHTML += `
+        <tr>
+          <td>${p.tanggal || ""}</td>
+          <td>${p.nama || ""}</td>
+          <td>${p.jabatan || ""}</td>
+          <td>${p.unit || ""}</td>
+          <td>${p.jam_masuk || ""}</td>
+          <td><span class="badge ${badgeClass}">${p.status_masuk || ""}</span></td>
+          <td>${p.jam_pulang || ""}</td>
+          <td>${p.jarak_meter || ""} m</td>
+          <td>${p.keterangan || ""}</td>
+        </tr>
+      `;
+    });
+
+    result.izin.forEach(i => {
+      tbodyIzin.innerHTML += `
+        <tr>
+          <td>${i.tanggal || ""}</td>
+          <td>${i.nama || ""}</td>
+          <td><span class="badge info">${i.jenis || ""}</span></td>
+          <td>${i.keterangan || ""}</td>
+        </tr>
+      `;
+    });
+  }
+
+  async function loadRekapBulanan() {
+    document.getElementById("rekapDetailBox").classList.add("hidden");
+    document.getElementById("rekapBulananBox").classList.remove("hidden");
+
+    const bulan = document.getElementById("bulanRekap").value;
+    const result = await api("getRekapBulanan", { bulan });
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    const tbody = document.getElementById("rekapBulanan");
+    tbody.innerHTML = "";
+
+    result.data.forEach((r, index) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${r.nama || ""}</td>
+          <td>${r.jabatan || ""}</td>
+          <td>${r.unit || ""}</td>
+          <td>${r.hadir || 0}</td>
+          <td>${r.tepat_waktu || 0}</td>
+          <td>${r.terlambat || 0}</td>
+          <td>${r.izin || 0}</td>
+          <td>${r.sakit || 0}</td>
+          <td>${r.dinas || 0}</td>
+          <td>${r.cuti || 0}</td>
+        </tr>
+      `;
+    });
+  }
+</script>
+
 </body>
 </html>
