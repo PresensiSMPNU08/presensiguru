@@ -16,8 +16,17 @@ textarea{min-height:72px}
 button{border:0;color:white;font-weight:700;cursor:pointer}
 .green{background:#007a46}.blue{background:#2563eb}.red{background:#dc2626}.gray{background:#53616c}.orange{background:#d97706}
 .hidden{display:none!important}
-.nav{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:10px 0}
+.full-only{display:initial}
+body.role-guru .full-only{display:none!important}
+body.role-full .full-only{display:initial}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0;align-items:start}
 .nav button{background:#006b3c;font-size:12px;padding:10px 6px}
+.menu-group{position:relative}
+.menu-title{background:#006b3c!important}
+.submenu{display:none;background:white;border:1px solid #dfe9e4;border-radius:14px;padding:8px;margin-top:6px;box-shadow:0 8px 22px #00000018;position:absolute;left:0;right:0;z-index:20}
+.submenu.show{display:block}
+.submenu button{background:#13a66b;margin-top:6px;text-align:left}
+.submenu button:first-child{margin-top:0}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -35,9 +44,12 @@ video,canvas,.preview{width:100%;border-radius:14px;background:#111;margin-top:8
 .slip-head{display:flex;align-items:center;gap:12px;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:12px}
 .slip-head img{width:70px;height:70px;object-fit:contain}
 .right{text-align:right} .small{font-size:12px;color:#5b6b62}
-@media(max-width:800px){.nav{grid-template-columns:repeat(2,1fr)}.grid,.grid2,.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.nav{grid-template-columns:repeat(2,1fr)}.submenu{position:static}.grid,.grid2,.grid3{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.grid,.grid2,.grid3{grid-template-columns:1fr}}
-@media print{.no-print,.nav,#loginPage,#userBox{display:none!important}body{background:white}.card{box-shadow:none;border:0}.page.hidden{display:none!important}}
+@media print{.no-print,.nav,#loginPage,#userBox{display:none!important}body{background:white}.card{box-shadow:none;border:0}.page.hidden{display:none!important}
+.full-only{display:initial}
+body.role-guru .full-only{display:none!important}
+body.role-full .full-only{display:initial}}
 </style>
 </head>
 <body>
@@ -49,7 +61,7 @@ video,canvas,.preview{width:100%;border-radius:14px;background:#111;margin-top:8
 <div class="app">
   <div id="loginPage" class="card">
     <h2>Login</h2>
-    <p class="small">Admin default: <b>admin</b> / <b>1234</b>. Guru login pakai ID Pegawai + PIN.</p>
+    <p class="small">Admin default: <b>admin</b> / <b>admin123</b>. Kepala sekolah bisa dibuat di tab users role <b>KEPALA_SEKOLAH</b>. Guru login pakai ID Pegawai + PIN.</p>
     <input id="loginUser" placeholder="Username / ID Pegawai">
     <input id="loginPass" type="password" placeholder="Password / PIN">
     <button class="green" onclick="login()">Login</button>
@@ -57,19 +69,34 @@ video,canvas,.preview{width:100%;border-radius:14px;background:#111;margin-top:8
 
   <div id="mainPage" class="hidden">
     <div id="userBox" class="card no-print"><b id="userInfo"></b><button class="red" onclick="logout()">Logout</button></div>
-    <div class="nav no-print">
-      <button onclick="showPage('dashboard')">Dashboard</button>
-      <button onclick="showPage('presensi')">Presensi</button>
-      <button onclick="showPage('jurnal')">Jurnal</button>
-      <button onclick="showPage('izin')">Izin</button>
-      <button onclick="showPage('koreksi')">Koreksi</button>
-      <button onclick="showPage('jadwal')">Jadwal</button>
-      <button onclick="showPage('kegiatan')">Kegiatan</button>
-      <button onclick="showPage('honor')">Honor</button>
-      <button onclick="showPage('rekap')">Rekap</button>
-      <button onclick="showPage('slip')">Slip Gaji</button>
-      <button onclick="showPage('master')">Master</button>
-      <button onclick="loadInit()">Refresh</button>
+    <div class="nav no-print" id="mainNav">
+      <button class="full-only" onclick="showPage('dashboard')">🏠 Dashboard</button>
+      <div class="menu-group">
+        <button class="menu-title" onclick="toggleMenu('menuAktivitas')">👨‍🏫 Aktivitas Guru ▾</button>
+        <div id="menuAktivitas" class="submenu">
+          <button onclick="showPage('presensi')">Presensi Masuk/Pulang</button>
+          <button onclick="showPage('jurnal')">Jurnal Mengajar</button>
+          <button onclick="showPage('izin')">Izin / Sakit / Dinas</button>
+          <button class="full-only" onclick="showPage('koreksi')">Koreksi Presensi</button>
+          <button class="full-only" onclick="showPage('jadwal')">Jadwal Mengajar</button>
+          <button class="full-only" onclick="showPage('kegiatan')">Kegiatan Sekolah</button>
+        </div>
+      </div>
+      <div class="menu-group full-only">
+        <button class="menu-title" onclick="toggleMenu('menuHonor')">💰 Honor & Rekap ▾</button>
+        <div id="menuHonor" class="submenu">
+          <button onclick="showPage('honor')">Honor Setting & Potongan</button>
+          <button onclick="showPage('rekap')">Rekap Presensi & Gaji</button>
+          <button onclick="showPage('slip')">Slip Gaji</button>
+        </div>
+      </div>
+      <div class="menu-group full-only">
+        <button class="menu-title" onclick="toggleMenu('menuPengaturan')">⚙️ Pengaturan ▾</button>
+        <div id="menuPengaturan" class="submenu">
+          <button onclick="showPage('master')">Master Data</button>
+          <button onclick="loadInit()">Refresh / Tarik Data</button>
+        </div>
+      </div>
     </div>
 
     <div id="dashboard" class="page card">
@@ -177,7 +204,7 @@ video,canvas,.preview{width:100%;border-radius:14px;background:#111;margin-top:8
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzMzuV9eFbrzJZEJIWxNLRjWfkTcFF_KkjeJqvTDUvL-5VUUodOwKPx7YCyOEPn4nVU/exec";
 const SCHOOL_NAME = "SMP NU 08 Boja";
-const SCHOOL_LAT = -7.107804;
+const SCHOOL_LAT = --7.107804;
 const SCHOOL_LNG = 110.285204;
 const SCHOOL_RADIUS = 150;
 let currentUser=null, db={}, lokasi={lat:'',lng:'',jarak:''}, selfieBase64='';
@@ -186,9 +213,30 @@ async function api(action,data={}){let r=await fetch(GAS_URL+'?action='+action,{
 document.addEventListener('DOMContentLoaded',()=>{document.getElementById('bulanRekap').value=month();document.getElementById('bulanSlip').value=month();['iMulai','iSelesai','kTanggal','kgTanggal','pTanggal'].forEach(id=>document.getElementById(id).value=today()); let s=localStorage.getItem('smpnu08_user'); if(s){currentUser=JSON.parse(s); masukAplikasi();} loadInit(); setInterval(()=>{let e=document.getElementById('clockNow'); if(e)e.innerText=new Date().toLocaleString('id-ID');},1000);});
 async function loadInit(){try{let r=await api('init'); if(!r.success) return alert(r.message); db=r; fillOptions(); renderAll();}catch(e){alert('Gagal konek GAS: '+e.message);}}
 async function login(){let username=loginUser.value.trim(), password=loginPass.value.trim(); let r=await api('login',{username,password}); if(!r.success)return alert(r.message); currentUser=r.user; localStorage.setItem('smpnu08_user',JSON.stringify(currentUser)); masukAplikasi();}
-function masukAplikasi(){loginPage.classList.add('hidden');mainPage.classList.remove('hidden');userInfo.innerText=(currentUser.nama||currentUser.username)+' - '+(currentUser.role||''); document.querySelectorAll('.admin-only').forEach(el=>{if(!['ADMIN','KEPALA_SEKOLAH','BENDAHARA'].includes(currentUser.role)) el.style.display='none';}); showPage('dashboard');}
+function isFullAccess(){return ['ADMIN','KEPALA_SEKOLAH'].includes(String(currentUser?.role||'').toUpperCase());}
+function masukAplikasi(){
+  loginPage.classList.add('hidden');
+  mainPage.classList.remove('hidden');
+  const role=String(currentUser.role||'GURU').toUpperCase();
+  userInfo.innerText=(currentUser.nama||currentUser.username)+' - '+role;
+  document.body.classList.remove('role-guru','role-full');
+  document.body.classList.add(isFullAccess()?'role-full':'role-guru');
+  document.querySelectorAll('.admin-only').forEach(el=>{el.style.display=isFullAccess()?'':'none';});
+  showPage(isFullAccess()?'dashboard':'presensi');
+}
 function logout(){localStorage.removeItem('smpnu08_user');location.reload();}
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));document.getElementById(id).classList.remove('hidden'); if(id==='presensi'){cekLokasi();startCamera();} if(id==='rekap')loadRekap(); if(id==='slip')fillOptions();}
+function toggleMenu(id){document.querySelectorAll('.submenu').forEach(m=>{if(m.id!==id)m.classList.remove('show');}); let el=document.getElementById(id); if(el)el.classList.toggle('show');}
+function closeMenus(){document.querySelectorAll('.submenu').forEach(m=>m.classList.remove('show'));}
+function showPage(id){
+  const guruAllowed=['presensi','jurnal','izin'];
+  if(!isFullAccess() && !guruAllowed.includes(id)) id='presensi';
+  closeMenus();
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  const page=document.getElementById(id); if(page) page.classList.remove('hidden');
+  if(id==='presensi'){cekLokasi();startCamera();}
+  if(id==='rekap')loadRekap();
+  if(id==='slip')fillOptions();
+}
 function fillOptions(){let peg=db.pegawai||[], kelas=db.kelas||[], mapel=db.mapel||[]; let po='<option value="">Pilih Pegawai</option>'+peg.map(p=>`<option value="${p.id_pegawai}">${p.nama} - ${p.id_pegawai}</option>`).join(''); ['jadPegawai','hPegawai','pPegawai','slipPegawai'].forEach(id=>{let e=document.getElementById(id); if(e)e.innerHTML=po;}); let ko='<option value="">Pilih Kelas</option>'+kelas.map(k=>`<option value="${k.id_kelas}">${k.nama_kelas}</option>`).join(''); ['jKelas','jadKelas'].forEach(id=>{let e=document.getElementById(id); if(e)e.innerHTML=ko;}); let mo='<option value="">Pilih Mapel</option>'+mapel.map(m=>`<option value="${m.id_mapel}">${m.nama_mapel}</option>`).join(''); ['jMapel','jadMapel'].forEach(id=>{let e=document.getElementById(id); if(e)e.innerHTML=mo;});}
 function renderAll(){let t=today(); let pres=(db.presensi||[]).filter(x=>String(x.tanggal)===t); dHadir.innerText=pres.length; dTelat.innerText=pres.filter(x=>x.status_masuk==='TERLAMBAT').length; dIzin.innerText=(db.izin||[]).filter(x=>String(x.tanggal_mulai)===t).length; dJurnal.innerText=(db.jurnal||[]).filter(x=>String(x.tanggal)===t).length; renderTables();}
 function renderTables(){tblJadwal.innerHTML=(db.jadwal||[]).map(j=>`<tr><td>${j.hari}</td><td>${j.nama_guru}</td><td>${j.mapel}</td><td>${j.kelas}</td><td>${j.jam_ke}</td><td>${j.jumlah_jp}</td></tr>`).join(''); tblKegiatan.innerHTML=(db.kegiatan||[]).map(k=>`<tr><td>${k.tanggal}</td><td>${k.nama_kegiatan}</td><td>${k.jenis_kegiatan}</td><td>${k.jumlah_jp_setara}</td><td>${k.peserta}</td><td>${k.status_honor}</td></tr>`).join(''); tblJurnal.innerHTML=(db.jurnal||[]).map(j=>`<tr><td>${j.tanggal}</td><td>${j.nama}</td><td>${j.kelas}</td><td>${j.mapel}</td><td>${j.jam_ke}</td><td>${j.materi}</td><td>${j.catatan}</td></tr>`).join(''); tblKoreksi.innerHTML=(db.koreksi||[]).map(k=>`<tr><td>${k.tanggal}</td><td>${k.nama}</td><td>${k.jenis_koreksi}</td><td>${k.jam_seharusnya}</td><td>${k.alasan}</td><td>${k.status}</td><td>${['ADMIN','KEPALA_SEKOLAH'].includes(currentUser?.role)?`<button class="green" onclick="approveKoreksi('${k.id_koreksi}','DISETUJUI')">Setujui</button><button class="red" onclick="approveKoreksi('${k.id_koreksi}','DITOLAK')">Tolak</button>`:''}</td></tr>`).join('');}
